@@ -1,4 +1,5 @@
-static
+.env
+.static
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,pycharm+all,vscode,windows,git,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,pycharm+all,vscode,windows,git,macos,linux

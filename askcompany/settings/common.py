@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os
+import os, json
 from os.path import abspath, dirname
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ADMINS = [
+    ('Sumin Park', 'study.himanmen@gmail.com')
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,8 +44,10 @@ INSTALLED_APPS = [
 
     # Thirds Apps
     "debug_toolbar",
+    "bootstrap4",
 
     # Local Apps
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -61,7 +67,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'askcompany', 'templates')
+            os.path.join(BASE_DIR, 'askcompany', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -86,6 +92,8 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -133,3 +141,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 INTERNAL_IPS = [
     '127.0.0.1'
 ]
+
+# Send Grid
+SECRET_ENV = json.loads(open(os.path.join(BASE_DIR, '.env')).read())
+# SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = SECRET_ENV.get("SENDGRID_API_KEY")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+WELCOME_EMAIL_SENDER = SECRET_ENV.get("WELCOME_EMAIL_SENDER")
