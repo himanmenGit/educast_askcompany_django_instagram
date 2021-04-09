@@ -20,13 +20,9 @@
                 </a>
             {% endif %}
         </div>
-        <div class="comment-list mb-3 mt-3">
+        <div id="post-{{ post.pk }}-comment-list" class="comment-list mb-3 mt-3">
             {% for comment in post.comment_set.all %}
-                <div class="comment">
-                    <strong>{{ comment.author }}</strong>
-                    {{ comment.message }}
-                    <small class="text-muted">{{ comment.created_at|naturaltime }}</small>
-                </div>
+                {% include 'instagram/_comment.html' %}
             {% endfor %}
         </div>
         <div>
@@ -44,10 +40,34 @@
     </div>
     <div class="card-footer">
         <a href="{% url 'instagram:comment_new' post.pk %}">댓글 쓰기</a>
-        <form action="{% url 'instagram:comment_new' post.pk %}" method="post" enctype="multipart/form-data">
+        <form id="post-{{ post.pk }}-comment-form" action="{% url 'instagram:comment_new' post.pk %}" method="post"
+              enctype="multipart/form-data">
             {% csrf_token %}
             {% bootstrap_form comment_form %}
             <input type="submit" value="댓글 쓰기" class="btn btn-primary btn-block">
         </form>
+
+        <script>
+            $(function () {
+                let form_id = "post-{{ post.pk }}-comment-form";
+                $('#' + form_id).submit(function (e) {
+                    e.preventDefault()
+
+                    let options = {
+                        success: function (responseText, statusText, xhr, $form) {
+                            console.group("ajaxSubmit response");
+                            console.log(responseText);
+                            console.log(statusText);
+                            console.log(xhr);
+                            console.log($form);
+                            console.groupEnd();
+
+                            $("#post-{{ post.pk }}-comment-list").prepend(responseText)
+                        }
+                    };
+                    $(this).ajaxSubmit(options)
+                });
+            });
+        </script>
     </div>
 </div>
