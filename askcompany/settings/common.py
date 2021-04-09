@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     "django_pydenticon",
 
     # Local Apps
-    'accounts',
+    "accounts",
+    "instagram",
 ]
 
 MIDDLEWARE = [
