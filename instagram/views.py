@@ -9,6 +9,12 @@ from .forms import PostForm
 
 
 @login_required
+def index(request):
+    return render(request, "instagram/index.html", {
+
+    })
+
+@login_required
 def post_new(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
