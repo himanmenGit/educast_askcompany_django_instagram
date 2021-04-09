@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Post, Tag
@@ -12,11 +13,19 @@ User = get_user_model()
 
 @login_required
 def index(request):
-    suggested_user_list = User.objects.all().\
-        exclude(pk=request.user.pk).\
-        exclude(pk__in=request.user.following_set.all())[:3]
+    post_list = Post.objects.filter(
+        Q(author=request.user) |
+        Q(author__in=request.user.following_set.all())
+    )
+
+    suggested_user_list = User.objects.all().exclude(
+        pk=request.user.pk
+    ).exclude(
+        pk__in=request.user.following_set.all()
+    )[:3]
 
     return render(request, "instagram/index.html", {
+        'post_list': post_list,
         "suggested_user_list": suggested_user_list,
     })
 
