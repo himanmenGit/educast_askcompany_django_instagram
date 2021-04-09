@@ -1,7 +1,9 @@
+from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Post, Tag
@@ -13,9 +15,13 @@ User = get_user_model()
 
 @login_required
 def index(request):
-    post_list = Post.objects.filter(
+    timesince = timezone.now() - timedelta(days=3)
+    post_list = Post.objects.all(
+    ).filter(
         Q(author=request.user) |
         Q(author__in=request.user.following_set.all())
+    ).filter(
+        created_at__gte=timesince
     )
 
     suggested_user_list = User.objects.all().exclude(
@@ -58,11 +64,18 @@ def post_detail(request, pk):
 
 def user_page(request, username):
     page_user = get_object_or_404(get_user_model(), username=username, is_active=True)
+    user = get_object_or_404(get_user_model(), pk=request.user.pk)
     post_list = Post.objects.filter(author=page_user)
     post_list_count = post_list.count()
+
+    if request.user.is_authenticated:
+        is_follow = user.following_set.filter(pk=page_user.pk).exists()
+    else:
+        is_follow = False
 
     return render(request, 'instagram/user_page.html', {
         'page_user': page_user,
         'post_list': post_list,
-        'post_list_count': post_list_count
+        'post_list_count': post_list_count,
+        'is_follow': is_follow,
     })
