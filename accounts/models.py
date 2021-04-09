@@ -35,7 +35,7 @@ class User(AbstractUser):
         if self.avatar:
             return self.avatar.url
         else:
-            resolve_url("pydenticon_image", self.username)
+            return resolve_url("pydenticon_image", self.username)
 
     def send_welcome_email(self):
         subject = render_to_string('accounts/welcome_email_subject.txt', {
